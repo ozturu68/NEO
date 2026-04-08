@@ -1,4 +1,4 @@
-import { getMatrixClient, initMatrixClient, loginWithPassword } from './client';
+import { getMatrixClient, initMatrixClient, loginWithPassword, isClientInitialized } from './client';
 import { saveSessionToken, getSessionToken, clearSession } from '../tauri/auth';
 
 export interface LoginCredentials {
@@ -83,7 +83,11 @@ export async function matrixLogout(): Promise<void> {
 /**
  * Check if user is authenticated
  */
-export function isAuthenticated(): boolean {
-  // TODO: Implement proper check
-  return false;
+export async function isAuthenticated(): Promise<boolean> {
+  try {
+    const token = await getSessionToken();
+    return token !== null && isClientInitialized();
+  } catch {
+    return false;
+  }
 }

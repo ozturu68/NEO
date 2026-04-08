@@ -33,13 +33,13 @@ export function setupSyncHandlers(client: MatrixClient): () => void {
   handleRoomList();
   
   // Listen to room events for room list updates
-  const onRoomUpdate = () => {
+  const onRoomUpdate = (_event: MatrixEvent, _room?: Room, _toStartOfTimeline?: boolean) => {
     handleRoomList();
   };
   
   // Use any type for event handlers to avoid complex signatures
-  client.on(RoomEvent.Timeline, onRoomUpdate as any);
-  unsubscribeCallbacks.push(() => client.removeListener(RoomEvent.Timeline, onRoomUpdate as any));
+  client.on(RoomEvent.Timeline, onRoomUpdate);
+  unsubscribeCallbacks.push(() => client.removeListener(RoomEvent.Timeline, onRoomUpdate));
   
   client.on(RoomEvent.Name, onRoomUpdate as any);
   unsubscribeCallbacks.push(() => client.removeListener(RoomEvent.Name, onRoomUpdate as any));

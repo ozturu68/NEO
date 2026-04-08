@@ -2,6 +2,7 @@ import { MatrixClient, createClient } from 'matrix-js-sdk';
 import { setupSyncHandlers } from './syncHandler';
 
 let clientInstance: MatrixClient | null = null;
+let cleanupSyncHandlers: (() => void) | null = null;
 
 /**
  * Initialize Matrix client with given credentials
@@ -12,6 +13,10 @@ export async function initMatrixClient(
   userId: string
 ): Promise<MatrixClient> {
   if (clientInstance) {
+    if (cleanupSyncHandlers) {
+      cleanupSyncHandlers();
+      cleanupSyncHandlers = null;
+    }
     await clientInstance.stopClient();
     clientInstance = null;
   }
@@ -38,10 +43,7 @@ export async function initMatrixClient(
   });
 
   // Setup sync handlers to update Zustand stores
-  const cleanupSyncHandlers = setupSyncHandlers(client);
-  
-  // Store cleanup function to call when stopping client
-  (client as any).__syncCleanup = cleanupSyncHandlers;
+  cleanupSyncHandlers = setupSyncHandlers(client);
 
   clientInstance = client;
   return client;
@@ -71,9 +73,9 @@ export function isClientInitialized(): boolean {
 export async function stopMatrixClient(): Promise<void> {
   if (clientInstance) {
     // Cleanup sync handlers if attached
-    const cleanup = (clientInstance as any).__syncCleanup;
-    if (cleanup && typeof cleanup === 'function') {
-      cleanup();
+    if (cleanupSyncHandlers) {
+      cleanupSyncHandlers();
+      cleanupSyncHandlers = null;
     }
     await clientInstance.stopClient();
     clientInstance = null;
@@ -88,21 +90,57 @@ export async function loginWithPassword(
   username: string,
   password: string
 ): Promise<{ client: MatrixClient; accessToken: string; userId: string }> {
-  const authData = await fetch(`${baseUrl}/_matrix/client/v3/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      type: 'm.login.password',
-      identifier: {
-        type: 'm.id.user',
-        user: username,
-      },
-      password,
-    }),
-  }).then(res => res.json());
+  // Input validation
+  if (!baseUrl || baseUrl.trim() === '') {
+    throw new Error('Sunucu URL\'si gereklidir');
+  }
+  if (!username || username.trim() === '') {
+    throw new Error('Kullanıcı adı gereklidir');
+  }
+  if (!password || password.trim() === '') {
+    throw new Error('Şifre gereklidir');
+  }
+  
+  // Validate URL format
+  try {
+    new URL(baseUrl);
+  } catch {
+    throw new Error('Geçersiz sunucu URL formatı');
+  }
+
+  let authData;
+  try {
+    const response = await fetch(`${baseUrl}/_matrix/client/v3/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        type: 'm.login.password',
+        identifier: {
+          type: 'm.id.user',
+          user: username,
+        },
+        password,
+      }),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    authData = await response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Matrix sunucusuna bağlanılamadı: ${error.message}`);
+    }
+    throw new Error('Matrix sunucusuna bağlanılamadı');
+  }
 
   if (authData.error) {
     throw new Error(authData.error);
+  }
+  
+  if (!authData.access_token || !authData.user_id) {
+    throw new Error('Geçersiz yanıt: eksik kimlik bilgileri');
   }
 
   const client = await initMatrixClient(

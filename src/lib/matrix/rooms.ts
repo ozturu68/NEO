@@ -1,6 +1,6 @@
 import { getMatrixClient } from './client';
 import type { RoomSummary } from '../../types/matrix';
-import { NotificationCountType } from 'matrix-js-sdk';
+import { NotificationCountType, Room } from 'matrix-js-sdk';
 
 export interface CreateRoomOptions {
   name: string;
@@ -125,7 +125,7 @@ export async function getRooms(): Promise<RoomSummary[]> {
 /**
  * Get room by ID
  */
-export function getRoom(roomId: string) {
+export function getRoom(roomId: string): Room | null {
   try {
     const client = getMatrixClient();
     return client.getRoom(roomId);
