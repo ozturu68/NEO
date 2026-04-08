@@ -1,5 +1,5 @@
 import { getMatrixClient, initMatrixClient, loginWithPassword, isClientInitialized } from './client';
-import { saveSessionToken, getSessionToken, clearSession } from '../tauri/auth';
+import { storageHelpers } from '../storage';
 
 export interface LoginCredentials {
   baseUrl: string;
@@ -19,8 +19,8 @@ export async function matrixLogin(credentials: LoginCredentials): Promise<{ user
       credentials.password
     );
 
-    // Save token securely via Tauri
-    await saveSessionToken(accessToken);
+    // Save token securely via storage abstraction
+    await storageHelpers.saveSessionToken(accessToken);
 
     console.log('Login successful:', userId);
     return { userId, accessToken };
@@ -38,7 +38,7 @@ export async function matrixLogin(credentials: LoginCredentials): Promise<{ user
  */
 export async function restoreSession(serverUrl?: string, userId?: string): Promise<boolean> {
   try {
-    const token = await getSessionToken();
+    const token = await storageHelpers.getSessionToken();
     if (!token) {
       return false;
     }
@@ -52,7 +52,7 @@ export async function restoreSession(serverUrl?: string, userId?: string): Promi
       } catch (error) {
         console.warn('Failed to restore session with stored token:', error);
         // Token might be invalid, clear it
-        await clearSession();
+        await storageHelpers.clearSession();
         return false;
       }
     }
@@ -77,7 +77,7 @@ export async function matrixLogout(): Promise<void> {
   }
 
   // Clear stored token
-  await clearSession();
+  await storageHelpers.clearSession();
 }
 
 /**
@@ -85,7 +85,7 @@ export async function matrixLogout(): Promise<void> {
  */
 export async function isAuthenticated(): Promise<boolean> {
   try {
-    const token = await getSessionToken();
+    const token = await storageHelpers.getSessionToken();
     return token !== null && isClientInitialized();
   } catch {
     return false;

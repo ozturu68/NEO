@@ -1,0 +1,41 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "neo-capability",
+  "description": "Minimal capability for Neo application",
+  "windows": ["main"],
+  "permissions": [
+    // Core permissions (minimal)
+    "core:default",
+    
+    // Filesystem: only app data directory
+    "fs:allow-app-data",
+    
+    // Notifications
+    "notification:allow-all",
+    
+    // Shell: open external links
+    "shell:allow-open",
+    
+    // HTTP requests to Matrix servers only
+    {
+      "identifier": "http:allow-request",
+      "allow": [
+        {
+          "url": "https://matrix.ozturu.com/*"
+        },
+        {
+          "url": "wss://matrix.ozturu.com/*"
+        },
+        {
+          "url": "https://element.ozturu.com/*"
+        },
+        {
+          "url": "https://rtc.ozturu.com/*"
+        }
+      ]
+    },
+    
+    // Clipboard write only (no read)
+    "clipboard:allow-write-text"
+  ]
+}

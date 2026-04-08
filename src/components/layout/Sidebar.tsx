@@ -1,4 +1,5 @@
-import { Home, MessageSquare, Users, Settings, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Home, MessageSquare, Users, Settings, ChevronLeft, ChevronRight, LogOut } from 'lucide-react';
+import { useAuthStore } from '../../lib/store/auth.store';
 import RoomList from '../rooms/RoomList';
 
 interface SidebarProps {
@@ -7,12 +8,22 @@ interface SidebarProps {
 }
 
 export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
+  const { logout } = useAuthStore();
+  
   const menuItems = [
     { icon: Home, label: 'Ana Sayfa', active: true },
     { icon: MessageSquare, label: 'Sohbetler', badge: 3 },
     { icon: Users, label: 'Topluluklar' },
     { icon: Settings, label: 'Ayarlar' },
   ];
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col">
@@ -56,6 +67,17 @@ export function Sidebar({ collapsed, onToggleCollapse }: SidebarProps) {
             </li>
           ))}
         </ul>
+        
+        {/* Logout button */}
+        <div className="mt-4 pt-4 border-t border-pardus-border">
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center p-3 rounded-lg text-pardus-text hover:bg-pardus-border transition-colors"
+          >
+            <LogOut size={20} />
+            {!collapsed && <span className="ml-3">Çıkış Yap</span>}
+          </button>
+        </div>
       </nav>
 
       {/* Room List */}

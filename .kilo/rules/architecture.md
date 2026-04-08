@@ -55,6 +55,15 @@ src/
 │   │   ├── rooms.store.ts
 │   │   ├── messages.store.ts
 │   │   └── ui.store.ts
+│   ├── storage/             # Platform abstraction layer
+│   │   ├── index.ts         # Storage interface
+│   │   ├── tauri.ts         # Tauri implementation
+│   │   ├── web.ts           # Web implementation
+│   │   └── init.ts          # Platform detection & initialization
+│   ├── config/              # Configuration management
+│   │   └── index.ts         # Environment-aware config
+│   ├── errors/              # Error types and utilities
+│   │   └── index.ts         # NeoError hierarchy
 │   └── i18n/                # Internationalization
 │       ├── index.ts
 │       └── locales/
@@ -184,6 +193,55 @@ export const useAuthStore = create<AuthState>()(
     { name: 'neo-auth' }
   )
 );
+```
+
+## Platform Abstraction Layer
+
+### Storage Abstraction
+
+Neo uses a platform abstraction layer for secure storage operations, allowing different implementations for Tauri (keyring), web (localStorage), and other platforms.
+
+1. **Interface-based Design:** All storage operations go through the `SecureStorage` interface
+2. **Platform Detection:** Automatic detection of Tauri vs web environment
+3. **Session Token Security:** In Tauri, tokens are stored in system keyring; in web, they use localStorage (less secure)
+
+```typescript
+// ✅ DOĞRU - Using storage abstraction
+import { storageHelpers } from '../storage';
+
+export async function saveAuthToken(token: string): Promise<void> {
+  await storageHelpers.saveSessionToken(token);
+}
+
+// ❌ YANLIŞ - Direct platform-specific calls
+import { invoke } from '@tauri-apps/api'; // Platform-specific!
+await invoke('save_session_token', { token });
+```
+
+### Configuration Management
+
+Centralized configuration with environment-specific defaults ensures consistent behavior across development and production.
+
+```typescript
+import { config } from '../config';
+
+// Use configuration instead of hardcoded values
+const serverUrl = config.matrix.defaultServer;
+const isDebug = config.features.enableDebugLogging;
+```
+
+### Error Handling
+
+Consistent error types and user-friendly error messages with Turkish translations.
+
+```typescript
+import { NeoError, MatrixError, errorUtils } from '../errors';
+
+// Creating typed errors
+throw new MatrixError('Login failed', 'M_FORBIDDEN', { userId });
+
+// User-friendly error display
+const userMessage = errorUtils.toUserFriendly(error, 'tr');
 ```
 
 ## Tauri IPC Kuralları

@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../lib/store/auth.store';
+import { config } from '../../lib/config';
 
 export function LoginScreen() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { login, isLoading, error, clearError, isAuthenticated } = useAuthStore();
-  const [serverUrl, setServerUrl] = useState('https://matrix.ozturu.com');
+  const [serverUrl, setServerUrl] = useState(config.matrix.defaultServer);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -105,7 +106,7 @@ export function LoginScreen() {
 
         <div className="mt-6 text-center">
           <p className="text-sm text-pardus-text/70">
-            Demo için: matrix.ozturu.com sunucusunu kullanın
+            Demo için: {config.matrix.defaultHomeserver} sunucusunu kullanın
           </p>
         </div>
       </div>
