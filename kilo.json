@@ -1,0 +1,215 @@
+{
+  "version": "1.0",
+  "project": {
+    "name": "Neo - Matrix İletişim Platformu",
+    "description": "Fedora, Debian ve Pardus için Matrix protokolü tabanlı, Tauri v2 + React ile sıfırdan geliştirilmiş güvenli iletişim platformu",
+    "language": "tr",
+    "primary_languages": ["TypeScript", "Rust"],
+    "frameworks": ["Tauri v2", "React 18", "matrix-js-sdk"],
+    "architecture": "desktop-client",
+    "target_platform": "Fedora, Debian, Pardus 25 (GNOME, XFCE, KDE Plasma)",
+    "current_milestone": "M2 - Tauri + React İstemci Geliştirme"
+  },
+  
+  "model": {
+    "default": {
+      "provider": "anthropic",
+      "id": "claude-sonnet-4-6",
+      "parameters": {
+        "max_tokens": 16384,
+        "temperature": 0.3,
+        "thinking": {
+          "type": "adaptive"
+        },
+        "output_config": {
+          "effort": "medium"
+        }
+      }
+    },
+    "overrides": {
+      "complex_architecture": {
+        "id": "claude-opus-4-6",
+        "parameters": {
+          "max_tokens": 64000,
+          "temperature": 0.2,
+          "thinking": {
+            "type": "enabled"
+          },
+          "output_config": {
+            "effort": "high"
+          }
+        },
+        "triggers": ["architecture", "refactor", "matrix protocol", "e2ee", "critical bug"]
+      },
+      "simple_tasks": {
+        "id": "claude-haiku-4-5",
+        "parameters": {
+          "max_tokens": 8192,
+          "temperature": 0.5,
+          "thinking": {
+            "type": "disabled"
+          },
+          "output_config": {
+            "effort": "low"
+          }
+        },
+        "triggers": ["documentation", "comment", "simple fix", "formatting"]
+      }
+    }
+  },
+  
+  "rules": {
+    "enabled": true,
+    "directory": ".kilo/rules",
+    "files": [
+      "code-style.md",
+      "architecture.md",
+      "security.md",
+      "testing.md"
+    ],
+    "priority": ["security.md", "architecture.md", "code-style.md", "testing.md"]
+  },
+  
+  "agents": {
+    "enabled": true,
+    "file": "AGENTS.md",
+    "auto_detect": true,
+    "preferred_agents": [
+      "Tauri + React Developer Agent",
+      "Matrix Protocol Specialist Agent",
+      "Rust + Tauri Backend Agent",
+      "Security Specialist Agent"
+    ]
+  },
+  
+  "commands": {
+    "enabled": true,
+    "directory": ".kilo/command"
+  },
+  
+  "skills": {
+    "enabled": true,
+    "directory": ".kilo/skills"
+  },
+  
+  "context": {
+    "include": [
+      "Proje_Ana_Dokümantasyonu.md",
+      "KISIM_A_-_Proje_Tanımı.md",
+      "KISIM_B_-_Gereksinimler.md",
+      "KISIM_C_-_Mimari_ve_Teknik_Temel.md",
+      "KISIM_D_-_Proje_Yönetimi.md",
+      "KISIM_E_-_Karar_Günlüğü__ADR_.md",
+      "KISIM_F_-_Değişiklik_Günlüğü.md",
+      "src/**/*.{ts,tsx,rs}",
+      "src-tauri/**/*.rs",
+      "package.json",
+      "Cargo.toml",
+      "tauri.conf.json",
+      ".kilo/rules/**/*.md"
+    ],
+    "exclude": [
+      "node_modules/**",
+      "__pycache__/**",
+      ".git/**",
+      "dist/**",
+      "build/**",
+      "target/**",
+      "*.pyc",
+      "AI_*.md",
+      "ARASTIRMA_*.txt"
+    ],
+    "priority_files": [
+      "KISIM_C_-_Mimari_ve_Teknik_Temel.md",
+      ".kilo/rules/architecture.md",
+      ".kilo/rules/security.md"
+    ]
+  },
+  
+  "tools": {
+    "allowed": [
+      "file_read",
+      "file_write",
+      "file_edit",
+      "bash",
+      "web_search"
+    ],
+    "restricted": [
+      {
+        "tool": "bash",
+        "require_confirmation": [
+          "rm -rf",
+          "git push --force",
+          "cargo clean",
+          "npm run build",
+          "docker-compose down"
+        ]
+      }
+    ]
+  },
+  
+  "git": {
+    "auto_commit": false,
+    "commit_message_template": "{type}({scope}): {subject}\n\n{body}\n\n{footer}",
+    "commit_types": ["feat", "fix", "docs", "style", "refactor", "test", "chore"],
+    "pre_commit_hooks": true,
+    "branch_naming": "feature/milestone-{number}"
+  },
+  
+  "testing": {
+    "auto_run": false,
+    "coverage_threshold": 80,
+    "critical_modules_threshold": 90,
+    "frameworks": {
+      "typescript": "vitest",
+      "rust": "cargo test"
+    },
+    "critical_modules": ["auth", "crypto", "messages", "matrix-wrapper"]
+  },
+  
+  "linting": {
+    "auto_fix": true,
+    "tools": {
+      "typescript": ["eslint", "prettier"],
+      "rust": ["clippy", "rustfmt"]
+    }
+  },
+  
+  "security": {
+    "scan_on_build": true,
+    "tools": ["npm audit", "cargo audit"],
+    "fail_on": ["high", "critical"],
+    "e2ee": {
+      "enforce": true,
+      "default_enabled": true
+    }
+  },
+  
+  "performance": {
+    "targets": {
+      "ram_idle": "120 MB",
+      "startup_time": "2s",
+      "message_latency": "200ms"
+    },
+    "monitor": true
+  },
+  
+  "documentation": {
+    "auto_generate": false,
+    "format": "markdown",
+    "language": "tr",
+    "include_examples": true,
+    "inline_comments": "tr"
+  },
+  
+  "workflow": {
+    "progressive_disclosure": true,
+    "state_tracking": {
+      "enabled": true,
+      "files": ["progress.md", "tests.json"]
+    },
+    "milestone_based": true,
+    "test_first": false,
+    "security_first": true
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "app": {
+    "name": "Neo",
+    "description": "Fedora, Debian ve Pardus için güvenli iletişim platformu"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "logout": "Çıkış Yap",
+    "username": "Kullanıcı adı",
+    "password": "Şifre",
+    "loginWithMatrix": "Matrix ile giriş yap",
+    "serverUrl": "Sunucu URL'si",
+    "invalidCredentials": "Kullanıcı adı veya şifre hatalı",
+    "welcome": "Hoş geldin, {{username}}!"
+  },
+  "chat": {
+    "sendMessage": "Mesaj gönder",
+    "placeholder": "Mesaj yaz...",
+    "typing": "{{user}} yazıyor...",
+    "messageCount": "{{count}} mesaj",
+    "messageCount_plural": "{{count}} mesaj"
+  },
+  "rooms": {
+    "createRoom": "Oda oluştur",
+    "joinRoom": "Odaya katıl",
+    "leaveRoom": "Odadan ayrıl",
+    "inviteUser": "Kullanıcı davet et"
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "language": "Dil",
+    "theme": "Tema",
+    "notifications": "Bildirimler",
+    "security": "Güvenlik"
+  },
+  "errors": {
+    "networkError": "Ağ hatası",
+    "serverError": "Sunucu hatası",
+    "unknownError": "Bilinmeyen hata"
+  }
+}

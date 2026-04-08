@@ -1,0 +1,41 @@
+{
+  "app": {
+    "name": "Neo",
+    "description": "Secure communication platform for Fedora, Debian and Pardus"
+  },
+  "auth": {
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "loginWithMatrix": "Login with Matrix",
+    "serverUrl": "Server URL",
+    "invalidCredentials": "Invalid username or password",
+    "welcome": "Welcome, {{username}}!"
+  },
+  "chat": {
+    "sendMessage": "Send message",
+    "placeholder": "Type a message...",
+    "typing": "{{user}} is typing...",
+    "messageCount": "{{count}} message",
+    "messageCount_plural": "{{count}} messages"
+  },
+  "rooms": {
+    "createRoom": "Create room",
+    "joinRoom": "Join room",
+    "leaveRoom": "Leave room",
+    "inviteUser": "Invite user"
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications",
+    "security": "Security"
+  },
+  "errors": {
+    "networkError": "Network error",
+    "serverError": "Server error",
+    "unknownError": "Unknown error"
+  }
+}
